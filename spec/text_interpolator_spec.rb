@@ -60,7 +60,7 @@ describe TextInterpolator do
         '"oracle_base": "/usr/local/oracle",' +
         '"oracle_version": "11.2.0.4.0",'+
 
-        '"src_dir": "downloads",' +
+        '"src_dir": "#{user}/downloads",' +
         '"dest_dir": "#{oracle_base}/instantclient_11_2",' +
 
         '"basic_zip": "#{src_dir}/instantclient-basic-macos.x64-#{oracle_version}.zip"' +
@@ -73,7 +73,7 @@ describe TextInterpolator do
       expect(result[:user]).to eq ENV['USER']
       expect(result[:oracle_base]).to eq '/usr/local/oracle'
       expect(result[:dest_dir]).to eq '/usr/local/oracle/instantclient_11_2'
-      expect(result[:basic_zip]).to eq 'downloads/instantclient-basic-macos.x64-11.2.0.4.0.zip'
+      expect(result[:basic_zip]).to eq ENV['USER'] + '/downloads/instantclient-basic-macos.x64-11.2.0.4.0.zip'
     end
   end
 end
