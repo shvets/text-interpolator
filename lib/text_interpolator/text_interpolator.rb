@@ -13,7 +13,7 @@ class TextInterpolator
   end
 
   def interpolate_string string, env={}
-    string = string.gsub(/\#/, '%') if string.index("#")
+    string = string.gsub(/\#{/, '%{') if string.index(/\#\{/)
 
     string = interpolate_env_vars(string) if string.index('ENV[')
 
