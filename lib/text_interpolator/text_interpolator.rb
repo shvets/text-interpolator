@@ -13,11 +13,9 @@ class TextInterpolator
   end
 
   def interpolate_string string, env={}
-    string = string.gsub(/\#{/, '%{') if string.index(/\#\{/)
+    new_string = replace_special_symbols(string)
 
-    string = interpolate_env_vars(string) if string.index('ENV[')
-
-    StringIO.new(string).read % env
+    StringIO.new(new_string).read % env
   end
 
   def interpolate_io io, env={}
@@ -32,28 +30,31 @@ class TextInterpolator
   end
 
   def interpolate_hash hash
-    pairs = hash.reduce({}) do |result, value|
+    env = hash.reduce({}) do |result, value|
       result[value[0]] = value[1]
 
       result
     end
 
     hash.each do |key, value|
-      value = value.gsub(/\#/, '%') if value.index("#")
+      new_value = replace_special_symbols(value)
 
-      hash[key] = StringIO.new(value).read % pairs
-    end
-
-    hash.each do |key, value|
-      new_value = interpolate_env_vars value
-
-      hash[key] = new_value if new_value
+      hash[key] = StringIO.new(new_value).read % env
     end
 
     hash
   end
 
   private
+
+  def replace_special_symbols string
+    new_string = string
+
+    new_string = new_string.gsub(/\#{/, '%{') if new_string.index(/\#\{/)
+    new_string = interpolate_env_vars(new_string) if new_string.index('ENV[')
+
+    new_string
+  end
 
   def interpolate_env_vars value
     while value.index('ENV[')
