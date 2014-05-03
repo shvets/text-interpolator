@@ -1,3 +1,5 @@
+require 'stringio'
+
 class TextInterpolator
 
   def interpolate object, env={}
