@@ -49,12 +49,14 @@ class TextInterpolator
       substitutions = false
 
       hash.each do |key, value|
-        if value.index(/\#\{/)
-          substitutions = true
+        if value.kind_of? String
+          if value.index(/\#\{/)
+            substitutions = true
 
-          value = value.gsub(/\#{/, '%{')
+            value = value.gsub(/\#{/, '%{')
 
-          hash[key] = StringIO.new(value).read % env
+            hash[key] = StringIO.new(value).read % env
+          end
         end
       end
     end while substitutions
@@ -65,8 +67,10 @@ class TextInterpolator
   private
 
   def interpolate_env_vars value
-    while value.index('ENV[')
-      value = interpolate_env_var value
+    if value.kind_of? String
+      while value.index('ENV[')
+        value = interpolate_env_var value
+      end
     end
 
     value
