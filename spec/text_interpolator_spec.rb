@@ -1,6 +1,5 @@
 require File.expand_path('spec_helper', File.dirname(__FILE__))
 
-require 'json'
 require 'text_interpolator'
 
 describe TextInterpolator do
@@ -52,21 +51,15 @@ describe TextInterpolator do
   end
 
   describe "#interpolate_hash" do
-    it "interpolates hash" do
-      config =
-        '{' +
-        '"user": "ENV[\'USER\']",' +
-
-        '"oracle_base": "/usr/local/oracle",' +
-        '"oracle_version": "11.2.0.4.0",'+
-
-        '"src_dir": "#{user}/downloads",' +
-        '"dest_dir": "#{oracle_base}/instantclient_11_2",' +
-
-        '"basic_zip": "#{src_dir}/instantclient-basic-macos.x64-#{oracle_version}.zip"' +
-        '}'
-
-      hash = JSON.parse(config, :symbolize_names => true)
+    it "interpolates simple hash" do
+      hash = {
+        user: ENV['USER'],
+        oracle_base: '/usr/local/oracle',
+        oracle_version: '11.2.0.4.0',
+        src_dir: '#{user}/downloads',
+        dest_dir: '#{oracle_base}/instantclient_11_2',
+        basic_zip: '#{src_dir}/instantclient-basic-macos.x64-#{oracle_version}.zip'
+      }
 
       result = subject.interpolate_hash hash
 
@@ -74,6 +67,40 @@ describe TextInterpolator do
       expect(result[:oracle_base]).to eq '/usr/local/oracle'
       expect(result[:dest_dir]).to eq '/usr/local/oracle/instantclient_11_2'
       expect(result[:basic_zip]).to eq ENV['USER'] + '/downloads/instantclient-basic-macos.x64-11.2.0.4.0.zip'
+    end
+
+    it "interpolates multi-level hash" do
+      hash = {
+        host: 'localhost',
+        user: ENV['USER'],
+        home: ENV['HOME'],
+
+        credentials: {
+          user: "some_user",
+          password: "some_password",
+
+          settings: {
+            user: "some_user2"
+          }
+        },
+
+        postgres: {
+          hostname: '#{host}',
+          user: '#{credentials.user}',
+          password: 'postgres'
+        },
+
+        mysql: {
+          user: '#{credentials.settings.user}',
+        }
+      }
+
+      result = subject.interpolate_hash hash
+
+      expect(result[:postgres][:user]).to eq hash[:credentials][:user]
+      expect(result[:mysql][:user]).to eq hash[:credentials][:settings][:user]
+
+      expect(subject.errors).to be_empty
     end
   end
 end
