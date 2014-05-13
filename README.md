@@ -21,7 +21,9 @@ puts result # We have var1: some value 1 and var2: some value 2.
 # some_template.erb
 
 We have var1: <%= var1 %> and var2:  <%= var2%>.
+```
 
+```ruby
 # test.rb
 
 require 'erb'
@@ -36,9 +38,8 @@ result = template.result(binding)
 puts result # We have var1: some value 1 and var2: some value 2.
 ```
 
-This library can be used for **interpolation inside file with string syntax**.
-
-In order to achieve it library uses this ruby trick:
+This library can be used for **interpolation inside file with string syntax**. In order to
+achieve it this library uses one ruby trick:
 
 ```ruby
 env = {var1: 'some value 1', var2: 'some value 2'}
@@ -59,7 +60,9 @@ It's straightforward:
 
 We have var1: #{var1} and var2:  #{var2}.
 We have var3: #{settings.var3} and var4:  #{settings.var4}.
+```
 
+```ruby
 # test.rb
 
 require 'text_interpolator'
@@ -67,6 +70,7 @@ require 'text_interpolator'
 env = {
   var1: 'some value 1',
   var2: 'some value 2',
+
   settings: {
     var3: 'some value 3',
     var4: 'some value 4'
