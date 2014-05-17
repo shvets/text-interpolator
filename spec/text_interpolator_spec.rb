@@ -95,7 +95,7 @@ describe TextInterpolator do
         }
       }
 
-      result = subject.interpolate_hash hash
+      result = subject.interpolate hash
 
       expect(result[:postgres][:user]).to eq hash[:credentials][:user]
       expect(result[:mysql][:user]).to eq hash[:credentials][:settings][:user]

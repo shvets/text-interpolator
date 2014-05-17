@@ -53,7 +53,7 @@ puts result # We have var1: some value 1 and var2: some value 2.
 
 ## Usage
 
-It's straightforward:
+It's straightforward. Here is example of file interpolation:
 
 ```ruby
 # some_template.txt
@@ -85,4 +85,35 @@ result = text_interpolator.interpolate template, env
 
 puts result # We have var1: some value 1 and var2: some value 2.
             # We have var3: some value 3 and var4: some value 4.
+```
+
+You can also interpolate hash on multiple levels:
+      
+```ruby
+hash = {
+  host: 'localhost',
+
+  credentials: {
+    user: "some_user",
+    password: "some_password",
+
+    settings: {
+      user: "some_user2"
+    }
+  },
+
+  postgres: {
+    hostname: '#{host}',
+    user: '#{credentials.user}',
+    password: 'postgres'
+  },
+
+  mysql: {
+    user: '#{credentials.settings.user}',
+  }
+}
+
+result = subject.interpolate hash
+
+p result
 ```
