@@ -2,7 +2,7 @@
 
 ## Introduction
 
-You have few options in ruby for variables interpolation:
+In ruby you have few options for variables interpolation:
 
 - interpolation inside the string:
 
