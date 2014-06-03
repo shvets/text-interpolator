@@ -17,7 +17,7 @@ class TextInterpolator
   end
 
   def interpolate_string string, env={}
-    @errors = {}
+    @errors = []
 
     value = interpolate_system_variable string
 
@@ -31,7 +31,7 @@ class TextInterpolator
   end
 
   def interpolate_hash hash
-    @errors = {}
+    @errors = []
 
     content = interpolate_system_variables(hash)
 
