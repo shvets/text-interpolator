@@ -2,7 +2,13 @@ require 'stringio'
 
 class TextInterpolator
 
-  attr_reader :errors
+  def errors
+    @errors ||= []
+  end
+
+  def clear_errors
+    errors.clear
+  end
 
   def interpolate object, env={}
     if object.kind_of? String
@@ -17,13 +23,14 @@ class TextInterpolator
   end
 
   def interpolate_string string, env={}
-    @errors = []
+    clear_errors
 
     value = interpolate_system_variable string
 
     begin
       new_value = interpolate_variable value, env
     rescue KeyError => e
+      new_value = string
       errors << e.message
     end
 
@@ -31,7 +38,7 @@ class TextInterpolator
   end
 
   def interpolate_hash hash
-    @errors = []
+    clear_errors
 
     content = interpolate_system_variables(hash)
 
