@@ -25,10 +25,14 @@ class TextInterpolator
   def interpolate_string string, env={}
     clear_errors
 
+    env = symbolize_keys env
+
     value = interpolate_system_variable string
 
+    var_table = build_variables_table(env)  # one-dimensional collection of variables
+
     begin
-      new_value = interpolate_variable value, env
+      new_value = interpolate_variable value, var_table
     rescue KeyError => e
       new_value = string
       errors << e.message
@@ -167,6 +171,24 @@ class TextInterpolator
     new_value = value.index(/\#\{/) ? value.gsub(/\#{/, '%{') : value
 
     StringIO.new(new_value).read % env
+  end
+
+  def symbolize_keys hash
+    new_hash = {}
+
+    hash.each do |key, value|
+      new_value = if value.kind_of? String
+        value
+      elsif value.kind_of? Hash
+        symbolize_keys value
+      else
+        value
+      end
+
+      new_hash[key.to_sym] = new_value
+    end
+
+    new_hash
   end
 
 end

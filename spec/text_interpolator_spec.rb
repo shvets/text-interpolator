@@ -5,16 +5,22 @@ require 'text_interpolator'
 describe TextInterpolator do
 
   describe "#interpolate_string" do
-    it "interpolates string with %{} tokens" do
-      env = {name1: 'name1', name2: 'name2'}
+    it "interpolates string with %{} symbol tokens" do
+      env = {name1: 'value1', name2: 'value2'}
 
-      expect(subject.interpolate_string "%{name1}, %{name2}", env).to eq "name1, name2"
+      expect(subject.interpolate_string "%{name1}, %{name2}", env).to eq "value1, value2"
+    end
+
+    it "interpolates string with %{} string tokens" do
+      env = {'name1' => 'value1', 'name2' => 'value2'}
+
+      expect(subject.interpolate_string "%{name1}, %{name2}", env).to eq "value1, value2"
     end
 
     it "interpolates string with '#{}' token" do
-      env = {name1: 'name1', name2: 'name2'}
+      env = {name1: 'value1', name2: 'value2'}
 
-      expect(subject.interpolate_string '#{name1}, #{name2}', env).to eq "name1, name2"
+      expect(subject.interpolate_string '#{name1}, #{name2}', env).to eq "value1, value2"
     end
 
     it "interpolates string with ENV token" do
@@ -25,28 +31,46 @@ describe TextInterpolator do
     end
 
     it "interpolates string with ENV token and white space" do
-      ENV['name1'] = 'name1'
-      ENV['name2'] = 'name2'
+      ENV['name1'] = 'value1'
+      ENV['name2'] = 'value2'
 
-      expect(subject.interpolate_string " ENV['name1'], ENV['name2']").to eq " name1, name2"
+      expect(subject.interpolate_string " ENV['name1'], ENV['name2']").to eq " value1, value2"
     end
 
     it "interpolates string with mixed tokens" do
-      env = {name1: 'name1', name2: 'name2'}
-      ENV['name3'] = 'name3'
+      env = {name1: 'value1', name2: 'value2'}
+      ENV['name3'] = 'value3'
 
-      expect(subject.interpolate_string '#{name1}, #{name2}, ENV[\'name3\']', env).to eq "name1, name2, name3"
+      expect(subject.interpolate_string '#{name1}, #{name2}, ENV[\'name3\']', env).to eq "value1, value2, value3"
+    end
+
+    it "interpolates string with multi-level tokens" do
+      env = {"name1" => 'value1', 'level2.name2' => 'value2'}
+
+      result = subject.interpolate_string '#{name1}, #{level2.name2}', env
+
+      expect(subject.errors).to be_empty
+      expect(result).to eq "value1, value2"
+    end
+
+    it "interpolates string with multi-level tokens (part 2)" do
+      env = {name1: 'value1', level2: {name2: 'value2'}}
+
+      result = subject.interpolate_string '#{name1}, #{level2.name2}', env
+
+      expect(subject.errors).to be_empty
+      expect(result).to eq "value1, value2"
     end
   end
 
   describe "#interpolate_io" do
     it "interpolates io stream"  do
-      env = {name1: 'name1', name2: 'name2'}
-      ENV['name3'] = 'name3'
+      env = {name1: 'value1', name2: 'value2'}
+      ENV['name3'] = 'value3'
 
       io = StringIO.new '#{name1}, #{name2}, ENV[\'name3\']'
 
-      expect(subject.interpolate_io io, env).to eq "name1, name2, name3"
+      expect(subject.interpolate_io io, env).to eq "value1, value2, value3"
     end
   end
 
