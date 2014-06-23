@@ -111,10 +111,10 @@ class TextInterpolator
   end
 
   def build_variable(var_table, compound_key, key, value)
-    if value.kind_of? String
-      var_table[key] = interpolate_variable value, var_table
-    elsif value.kind_of? Hash
+    if value.kind_of? Hash
       build_hash var_table, compound_key, value
+    else
+      var_table[key] = interpolate_variable value.to_s, var_table
     end
   end
 
