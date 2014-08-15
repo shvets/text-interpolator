@@ -2,9 +2,9 @@ require File.expand_path('spec_helper', File.dirname(__FILE__))
 
 require 'text_interpolator'
 
-describe TextInterpolator do
+RSpec.describe TextInterpolator do
 
-  describe "#interpolate_string" do
+  context "#interpolate_string" do
     it "interpolates string with %{} symbol tokens" do
       env = {name1: 'value1', name2: 'value2'}
 
@@ -63,7 +63,7 @@ describe TextInterpolator do
     end
   end
 
-  describe "#interpolate_io" do
+  context "#interpolate_io" do
     it "interpolates io stream"  do
       env = {name1: 'value1', name2: 'value2'}
       ENV['name3'] = 'value3'
@@ -74,7 +74,7 @@ describe TextInterpolator do
     end
   end
 
-  describe "#interpolate_hash" do
+  context "#interpolate_hash" do
     it "interpolates simple hash" do
       hash = {
         user: ENV['USER'],
@@ -116,13 +116,24 @@ describe TextInterpolator do
 
         mysql: {
           user: '#{credentials.settings.user}',
-        }
+        },
+
+        project: {
+          home: '/some_home'
+        },
+
+        instant_client: {
+          src_dir: '#{project.home}/downloads',
+          basic_zip: '#{instant_client.src_dir}/instantclient-basic-macos.x64-123.zip'
+        },
       }
 
       result = subject.interpolate hash
 
       expect(result[:postgres][:user]).to eq hash[:credentials][:user]
       expect(result[:mysql][:user]).to eq hash[:credentials][:settings][:user]
+
+      expect(result[:instant_client][:basic_zip]).to eq "/some_home/downloads/instantclient-basic-macos.x64-123.zip"
 
       expect(subject.errors).to be_empty
     end

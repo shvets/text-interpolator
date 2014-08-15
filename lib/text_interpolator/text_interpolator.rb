@@ -107,6 +107,10 @@ class TextInterpolator
       build_variable(var_table, key, key, value)
     end
 
+    var_table.each do |key, value|
+      var_table[key] = interpolate_variable value.to_s, var_table
+    end
+
     var_table
   end
 
@@ -114,7 +118,7 @@ class TextInterpolator
     if value.kind_of? Hash
       build_hash var_table, compound_key, value
     else
-      var_table[key] = interpolate_variable value.to_s, var_table
+      var_table[key] = value
     end
   end
 
