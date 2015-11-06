@@ -172,7 +172,7 @@ class TextInterpolator
   end
 
   def interpolate_variable value, env
-    new_value = value.index(/\#\{/) ? value.gsub(/\#{/, '%{') : value
+    new_value = value.gsub(/#\{(.*)\}/, '%{\1}').gsub(/%\{(.*)\}/) {|s| s.gsub(/\s+/, '') }
 
     StringIO.new(new_value).read % env
   end
