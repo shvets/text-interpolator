@@ -23,8 +23,6 @@ class TextInterpolator
   end
 
   def interpolate_string string, env={}
-    clear_errors
-
     env = symbolize_keys env
 
     value = interpolate_system_variable string
@@ -42,8 +40,6 @@ class TextInterpolator
   end
 
   def interpolate_hash hash
-    clear_errors
-
     content = interpolate_system_variables(hash)
 
     var_table = build_variables_table(content)  # one-dimensional collection of variables
@@ -172,7 +168,7 @@ class TextInterpolator
   end
 
   def interpolate_variable value, env
-    new_value = value.gsub(/#\{(.*)\}/, '%{\1}').gsub(/%\{(.*)\}/) {|s| s.gsub(/\s+/, '') }
+    new_value = value.gsub(/#\{([a-zA-Z\d\._]*)\}/, '%{\1}').gsub(/%\{([a-zA-Z\d\._]*)\}/) {|s| s.gsub(/\s+/, '') }
 
     StringIO.new(new_value).read % env
   end
