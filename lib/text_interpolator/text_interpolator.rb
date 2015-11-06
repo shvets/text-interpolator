@@ -168,7 +168,7 @@ class TextInterpolator
   end
 
   def interpolate_variable value, env
-    new_value = value.gsub(/#\{([a-zA-Z\d\._]*)\}/, '%{\1}').gsub(/%\{([a-zA-Z\d\._]*)\}/) {|s| s.gsub(/\s+/, '') }
+    new_value = value.gsub(/#\{([a-zA-Z\s\d\._]*)\}/, '%{\1}').gsub(/%\{([a-zA-Z\s\d\._]*)\}/) {|s| s.gsub(/\s+/, '') }
 
     StringIO.new(new_value).read % env
   end
